@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1.0" />
+    <title>Alberto Hortelano</title>
+    <link rel="icon" type="image/x-icon" href="icon.ico" />
+  	<link rel="stylesheet" type="text/css" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Lato:400,700'>
+    <link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.1.1/normalize.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://file.myfontastic.com/sGZMNhT23eTMNuhhjmmz2Z/icons.css">
+  	<link rel="stylesheet" type="text/css" href="css/style.css">
+
+  	<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+  	<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=css"></script>
+  	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+  	<script src="./js/scrollwatch.js" type="text/javascript"></script>
+  	<script type="text/javascript">
+  		$( document ).ready(function() {
+
+  			$('#contact input, #contact textarea').focus(function() {
+  				$(this).parent().addClass('full').removeClass('required')
+  			}).blur(function(argument) {
+  				if($(this).val().length < 1) {
+  					$(this).parent().removeClass('full')
+  				}
+  			})
+	  		var html_ents = function (s) {
+	    		return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
+	  		}
+    		$( ".prettysource" ).each(function(){
+    			$(this).prev().html( html_ents( $( this ).val() ) )
+    		})
+	  		setInterval(function() {
+  				var wait = 0;
+  				for (var i = 5; i < 9; i++) {
+  					(function(i) {
+	  					setTimeout( function() {
+			  				$('#portfolio .prettyprint .L'+i+' span').each(function(j) {
+			  					var $this = $(this)
+			  					setTimeout(function() {
+			  						$this.toggleClass('not-transparent')
+			  					},100 + j * 100)
+			  				})
+			  				if(i == 8) {
+			  					setTimeout( function() {
+				  					$('#portfolio .pc-mobile-swap').addClass('animate')
+	  							}, 300)
+			  					setTimeout( function() {
+		  							$('#portfolio .buttons .button').removeClass('transparent')
+				  					$('#portfolio .pc-mobile-swap').removeClass('animate')
+	  							}, 1400)
+			  					setTimeout( function() {
+			  						$('#portfolio .buttons .button').addClass('transparent')
+			  						$('#portfolio .not-transparent').removeClass('not-transparent')
+	  							}, 3000)
+			  				}
+	  					},wait)
+  						wait += ($('#portfolio .prettyprint .L'+i+' span').length) * 100
+  					})(i)
+  				}
+	  		}, 6000)
+  			$('#aside').click(function() {
+  				$(this).toggleClass('open')
+  			})
+  			$('#send_mail').click(function() {
+  				if( $('#contact label').not('.full').addClass('required').length > 0){
+  					return
+  				}
+  				$.ajax({
+					method: "POST",
+					url: "http://192.168.1.36/cv/mail.php",
+					data: {
+						name: $('#contact-name').val(),
+						email: $('#contact-email').val(),
+						subject: $('#contact-subject').val(),
+						message: $('#contact-message').val()
+					}
+				}).done(function( msg ) {
+					if(msg) {
+						alert( "Message sent OK" )
+					}else{
+						alert( "Unable to send message. Please contact to alberto.hortelano.moran@gmail.com" )
+					}
+				})
+  			})
+  			function resetContactAnchor() {
+  				var top = $('#contact').outerHeight() - $(window).height()
+  				if(top < -50) {
+  					$('#contact-anchor').css('top',top--)
+  				}else {
+  					$('#contact-anchor').css('top',50)
+  				}
+  			}
+  			$(window).resize(function() {
+  				resetContactAnchor()
+  			})
+			resetContactAnchor()
+  			scrollWatch.init([
+  				{
+  					// Card
+  					elements: $('#card'),
+  					onPosition: function(j) {
+						return 120
+					},
+  					onElement: function(j, exitScreen) {
+						if (exitScreen) {
+							this.elements.eq(j).addClass('raised')
+						}else{
+							this.elements.eq(j).removeClass('raised')
+						}
+					}
+  				},{
+  					// Sticky menu
+  					elements: $('#aside'),
+  					onPosition: 'touchTop',
+  					onElement: function(j, exitScreen) {
+						if (exitScreen) {
+							this.elements.eq(j).children().removeClass('fixed')
+						}else{
+							this.elements.eq(j).children().addClass('fixed')
+						}
+					}
+  				},{
+  					// Selected menu
+  					elements: $('.anchor-mark'),
+  					onPosition: 'touchTop',
+  					onElement: function(j, exitScreen) {
+						$('#aside a.selected').removeClass('selected');
+  						if (exitScreen) {
+							if (j > 0) {
+								$('#to-'+this.elements.eq(j-1).parent().attr('id')).addClass('selected');
+							}
+  						}else{
+							$('#to-'+this.elements.eq(j).parent().attr('id')).addClass('selected');
+  						}
+  					}
+  				},{
+  					// Skill bars
+  					elements: $('#skills .card'),
+  					onPosition: 'fullyVisible',
+  					onElement: 'skills-full',
+  					onlyOnce: true
+  				},{
+  					// Timeline
+  					elements: $('.timeline-block'),
+  					onPosition: 'fullyVisible',
+  					onElement: 'visible',
+  					onlyOnce: true
+  				}
+
+  			],{
+				resizeDelay: 250
+			})
+
+			$( window ).load(function() {
+				setTimeout(function(){
+					if ($(window).scrollTop() <= 120) {
+						$("#card").addClass('raised')
+					}
+				},1000);
+			})
+  		});
+  	</script>
+    </head>
+<body>
+    <header id="header">
+        <hgroup>
+            <div id="card" class="row" href="#">
+            	<div class="card_cont clearfix">
+            		<div class="card_photo col-md-4">
+	            		<img src="img/yo1.jpg">
+	            	</div>
+	            	<div class="card_info col-md-8">
+		            	<div class="clearfix mb-10">
+	            			<div>
+			            		<span class="h1"><span class="light_text">I'm </span> <h1>Alberto Hortelano</h1><br>
+			            		<span class="light_text small">Full-stack developer</span></span>
+		            		</div>
+		            	</div>
+		            	<div>
+		            		<dl class="dl-horizontal aptitudes">
+		            			<dt>Languages</dt> <dd><span>JS</span> <span>PHP</span> <span>SQL</span> <span>HTML</span> <span>CSS</span> <span>Bash</span></dd>
+		            			<dt>Web</dt> <dd><span>Node</span> <span>WordPress</span> <span>Apache</span></dd>
+		            			<dt>Desktop</dt> <dd><span>NodeWebkit</span></dd>
+		            			<dt>Apps</dt> <dd><span>Phonegap</span></dd>
+		            			<dt>Other languages</dt> <dd><span>English</span> <span>Spanish</span></dd>
+		            		</dl>
+		            	</div>
+	            	</div>
+	    			<ul class="my-social col-xs-12">
+	    				<li><a href="https://www.google.es/maps/@40.5152388,-3.5251208,7z" target="_blank"><i class="ion-ios-location"></i></a></li>
+	    				<li><a href="https://github.com/alberto-hortelano" target="_blank"><i class="ion-social-github"></i></a></li>
+	    				<li><a href="http://stackoverflow.com/users/5434458/alberto-hortelano?tab=profile" target="_blank"><i class="icon-social-stack-overflow"></i></a></li>
+	    				<li><a href="https://es.linkedin.com/in/albertohortelano" target="_blank"><i class="icon-linkedin"></i></a></li>
+	    				<li><a href="mailto:alberto.hortelano.moran@gmail.com" target="_top"><i class="ion-email"></i></a></li>
+	        		</ul>
+	            </div>
+            </div>
+        </hgroup>
+    </header>
+    <aside id="aside">
+	    <nav role="navigation">
+	    	<i class="menu_mobile ion-navicon"></i>
+		    <a id="to-skills" href="#skills-anchor"><i class="ion-arrow-graph-up-right"></i>Skills</a>
+		    <a id="to-portfolio" href="#portfolio-anchor"><i class="ion-images"></i>Portfolio</a>
+		    <a id="to-experiments" href="#experiments-anchor"><i class="ion-ios-flask"></i>Experiments</a>
+		    <a id="to-career" href="#career-anchor"><i class="ion-briefcase"></i>Career</a>
+		    <a id="to-contact" href="#contact-anchor"><i class="ion-email"></i>Contact</a>
+	    </nav>
+    </aside>
+    <section id="articles">
+        <article id="skills">
+        	<span id="skills-anchor" class="anchor-mark"></span>
+        	<div class="content">
+        		<div class="contained">
+		            <header>
+		                <h1 class="section_title">Skills</h1>
+		            </header>
+		            <div class="col-md-6">
+			            <section>
+			            	<div class="card">
+				            	<div class="main-skill skill skill-5"><a href="https://en.wikipedia.org/wiki/JavaScript" target="_blank"><span>JavaScript</span></a></div>
+				            	<div class="skill skill-5"><a href="https://nodejs.org/en/" target="_blank" title="Framework"><span>Node</span></a></div>
+				            	<div class="skill skill-4"><a href="http://expressjs.com/" target="_blank" title="Node server"><span>Express</span></a></div>
+				            	<div class="skill skill-4"><a href="https://loopback.io/" target="_blank" title="Node server"><span>Loopback</span></a></div>
+				            	<div class="skill skill-4"><a href="https://reactjs.org/" target="_blank" title="Front library"><span>React</span></a></div>
+				            	<div class="skill skill-3"><a href="https://angularjs.org/" target="_blank" title="Front library"><span>Angular</span></a></div>
+				            	<div class="skill skill-5"><a href="https://jquery.com/" target="_blank" title="Front Library"><span>jQuery</span></a></div>
+				            	<div class="skill skill-4"><a href="http://nwjs.io/" target="_blank" title="Desktop library"><span>NW</span></a></div>
+				            	<div class="skill skill-3"><a href="http://phonegap.com/" target="_blank" title="Mobile library"><span>Phonegap</span></a></div>
+				            	<div class="skill skill-1"><a href="http://threejs.org/" target="_blank" title="3D physics library"><span>Threejs</span></a></div>
+			            	</div>
+			            </section>
+			            <section>
+			            	<div class="card">
+				            	<div class="main-skill skill skill-3"><a href="https://en.wikipedia.org/wiki/Database" target="_blank"><span>Databases</span></a></div>
+				            	<div class="skill skill-4"><a href="https://en.wikipedia.org/wiki/SQL" target="_blank"><span>SQL</span></a></div>
+				            	<div class="skill skill-3"><a href="https://en.wikipedia.org/wiki/Data_access_object" target="_blank"><span>DAO</span></a></div>
+				            	<div class="skill skill-4"><a href="https://www.mysql.com/" target="_blank"><span>MySQL</span></a></div>
+				            	<div class="skill skill-2"><a href="https://www.mongodb.com/" target="_blank"><span>mongoDB</span></a></div>
+			            	</div>
+			            </section>
+			            <section>
+			            	<div class="card">
+				            	<div class="main-skill skill skill-3"><a href="https://en.wikipedia.org/wiki/JavaScript" target="_blank"><span>Scripting</span></a></div>
+				            	<div class="skill skill-3"><a href="https://nodejs.org/en/" target="_blank"><span>Bash ( Linux )</span></a></div>
+				            	<div class="skill skill-2"><a href="http://nwjs.io/" target="_blank"><span>VBS ( Windows )</span></a></div>
+			            	</div>
+			            </section>
+			            <section>
+			            	<div class="card">
+				            	<div class="main-skill skill skill-5"><a href="https://en.wikipedia.org/wiki/JavaScript" target="_blank"><span>CSS</span></a></div>
+				            	<div class="skill skill-5"><a href="https://nodejs.org/en/" target="_blank"><span>Sass</span></a></div>
+				            	<div class="skill skill-4"><a href="http://nwjs.io/" target="_blank"><span>Less</span></a></div>
+				            	<div class="skill skill-4"><a href="http://nwjs.io/" target="_blank"><span>Bootstrap</span></a></div>
+			            	</div>
+			            </section>
+			        </div>
+		            <div class="col-md-6">
+                  <section>
+                    <div class="card">
+                      <div class="main-skill skill skill-4"><a href="https://aws.amazon.com/" target="_blank"><span>AWS</span></a></div>
+                      <div class="skill skill-4"><a href="https://aws.amazon.com/elasticbeanstalk/" target="_blank"><span>Elastic Beanstalk</span></a></div>
+                      <div class="skill skill-4"><a href="https://aws.amazon.com/ec2/" target="_blank"><span>EC2</span></a></div>
+                      <div class="skill skill-3"><a href="https://aws.amazon.com/ebs/" target="_blank"><span>EBS</span></a></div>
+                      <div class="skill skill-3"><a href="https://aws.amazon.com/efs/" target="_blank"><span>EFS</span></a></div>
+                      <div class="skill skill-4"><a href="https://aws.amazon.com/s3/" target="_blank"><span>S3</span></a></div>
+                      <div class="skill skill-4"><a href="https://aws.amazon.com/rds/" target="_blank"><span>RDS</span></a></div>
+                      <div class="skill skill-3"><a href="https://aws.amazon.com/cloudfront/" target="_blank"><span>Cloudfront</span></a></div>
+                      <div class="skill skill-2"><a href="https://aws.amazon.com/route53/" target="_blank"><span>Route 53</span></a></div>
+                    </div>
+                  </section>
+			            <section>
+			            	<div class="card">
+				            	<div class="main-skill skill skill-5"><a href="https://secure.php.net/"><span>PHP</span></a></div>
+				            	<div class="skill skill-4"><a href="https://httpd.apache.org/" target="_blank" title="Server"><span>Apache</span></a></div>
+				            	<div class="skill skill-5"><a href="https://wordpress.org/" target="_blank" title="CMS"><span>WordPress</span></a></div>
+				            	<div class="skill skill-3"><a href="http://www.yiiframework.com/" target="_blank" title="Framework"><span>Yii</span></a></div>
+				            	<div class="skill skill-1"><a href="https://phpunit.de/" target="_blank" title="Error detection"><span>PHPUnit</span></a></div>
+				            	<div class="skill skill-3"><a href="https://kcachegrind.github.io/html/Home.html" target="_blank" title="Performance testing"><span>KCachegrind</span></a></div>
+			            	</div>
+			            </section>
+			            <section>
+			            	<div class="card">
+				            	<div class="main-skill skill skill-5"><a href="https://en.wikipedia.org/wiki/JavaScript" target="_blank"><span>HTML</span></a></div>
+				            	<div class="skill skill-5"><a href="https://nodejs.org/en/" target="_blank"><span>HTML5</span></a></div>
+				            	<div class="skill skill-4"><a href="http://nwjs.io/" target="_blank"><span>Accessibility</span></a></div>
+				            	<div class="skill skill-4"><a href="http://nwjs.io/" target="_blank"><span>Semantic</span></a></div>
+			            	</div>
+			            </section>
+	        		</div>
+	        	</div>
+	        </div>
+        </article>
+        <article id="portfolio">
+        	<span id="portfolio-anchor" class="anchor-mark"></span>
+        	<div class="content">
+        		<div class="contained">
+		            <header>
+		                <h1 class="section_title">Portfolio</h1>
+		            </header>
+		            <section>
+		                <span class="description">Front Ninja</span>
+	                	<div class="row mb-40">
+	                		<div class="col-lg-12">
+	                			<p>Front Ninja is a free and open source front end development environment for webs and apps.<br>In addition to web development, Front Ninja lets you edit a Cordova/Phonegap app in your computer and view the result on your smartphone without compiling it, with live Css/Scss edition and with access to all native functions like the camera or the vibration.</p>
+	                		</div>
+	                	</div>
+	                	<div class="row mb-20">
+			                <div class="col-md-12">
+			                	<div class="clearfix relative">
+				                	<div class="mb-20 in-macbook black">
+				                		<div class="top-bg"></div>
+				                		<div class="desktop">
+
+<div class="front-ninja">
+	<div class="top-titlebar">
+		<div class="app_button menu" data-run="toggle_menu" title="Menu"><i class="ion-navicon-round"></i></div>
+		<h1>Front Ninja</h1>
+		<h2 class="selected_project"></h2>
+		<div class="top-titlebar-buttons">
+			<div class="app_button" data-run="close" title="Close"><i class="ion-close"></i></div>
+			<div class="app_button" data-run="maximize" title="Maximize"><i class="ion-plus"></i></div>
+			<div class="app_button" data-run="minimize" title="Minimize"><i class="ion-minus"></i></div>
+			<div class="app_button" data-run="show_help" title="Help"><i class="ion-help"></i></div>
+			<div class="app_button home" data-run="load_home" title="Home"><i class="ion-home"></i></div>
+		</div>
+	</div>
+	<pre class="prettyprint lang-html linenums">
+	</pre>
+	<textarea class="prettysource">
+		<div class="square">
+			<div class="circle" data-run="vibrate">
+				<i class="ion-radio-waves"></i>
+			</div>
+		</div>
+		<div class="button" data-run="share">
+			<span>LOVE IT</span>
+			<i class="ion-heart"></i>
+		</div>
+	</div>
+	</textarea>
+</div>										</div>
+				                		<div class="bottom-bg"></div>
+				                	</div>
+				                	<div class="pc-ms-cover"><span class="pc-mobile-swap"><span></span></span></div>
+				                	<div class="in-iphone black">
+				                		<div class="top-bg"></div>
+				                		<div class="buttons iphone-screen clearfix">
+				                			<!-- Three columns of text below the carousel -->
+				                			<div class="square">
+				                				<div class="circle" data-run="camera">
+				                					<i class="ion-camera"></i>
+				                				</div>
+				                			</div>
+				                			<div class="square">
+				                				<div class="circle" data-run="contacts">
+				                					<i class="ion-android-contacts"></i>
+				                				</div>
+				                			</div>
+				                			<div class="square">
+				                				<div class="circle" data-run="filesystem">
+				                					<i class="ion-ios-folder"></i>
+				                				</div>
+				                			</div>
+				                			<div class="square">
+				                				<div class="circle" data-run="accelerometer">
+				                					<i class="ion-speedometer"></i>
+				                				</div>
+				                			</div>
+				                			<div class="square">
+				                				<div class="circle" data-run="compass">
+				                					<i class="ion-android-compass"></i>
+				                				</div>
+				                			</div>
+				                			<div class="square">
+				                				<div class="circle" data-run="geolocation">
+				                					<i class="ion-ios-world"></i>
+				                				</div>
+				                			</div>
+				                			<div class="square">
+				                				<div class="circle" data-run="device">
+				                					<i class="ion-iphone"></i>
+				                				</div>
+				                			</div>
+				                			<div class="square">
+				                				<div class="circle" data-run="connection">
+				                					<i class="ion-wifi"></i>
+				                				</div>
+				                			</div>
+				                			<div class="square">
+				                				<div class="circle" data-run="vibrate">
+				                					<i class="ion-radio-waves"></i>
+				                				</div>
+				                			</div>
+				                			<div class="button transparent">
+				                				<div class="button-body" data-run="share">
+				                					<span>LOVE IT</span>
+				                					<i class="ion-heart"></i>
+				                				</div>
+				                			</div>
+				                		</div>
+				                		<div class="bottom-bg"></div>
+				                	</div>
+		                		</div>
+		                	</div>
+						</div>
+	                	<div class="row mb-40">
+	                		<div class="col-md-12">
+		                		<p><a href="http://www.frontninja.com/" title="FrontNinja Website" target="_blank">Visit FrontNinja Website</a></p>
+		                		<p><a href="https://github.com/alberto-hortelano/front_ninja" title="FrontNinja GitHub" target="_blank">View Project on GitHub</a></p>
+	                		</div>
+	                	</div>
+		            </section>
+		            <section>
+		                <span class="description">Brane Framework</span>
+	                	<div class="row mb-40">
+	                		<div class="col-lg-12">
+		                		<p>Brane Framework is an Open Source Framework designed to develop WordPress Themes easily and quickly. <br>
+		                		It has been built to be used on any kind of theme, covering the majority of scenarios, always maintaining a standard of quality. <br>
+		                		Can be extended to add new functionalities, compatibility with plugins, widgets... </p>
+		                		<p>Two themes made from Brane Framework:</p>
+                			</div>
+	                	</div>
+	                	<div class="row mb-20 relative">
+	                		<div class="col-md-6 mb-40">
+	                			<a class="theme_link" href="https://themeforest.net/item/bazar-blog-store-wordpress-theme/16269688?s_rank=1" title="bazar"><img class="img-responsive" src="img/bazar.jpg"></a>
+                			</div>
+	                		<div class="col-md-6 mb-40">
+	                			<a class="theme_link" href="https://themeforest.net/item/cinnamon-agency-creative-portfolio-theme/15288980?s_rank=2" title="cinnamon"><img class="img-responsive" src="img/cinnamon.jpg"></a>
+                			</div>
+	                	</div>
+	                	<div class="row mb-20">
+	                		<div class="col-lg-12">
+	                			<p><a href="https://github.com/alberto-hortelano/Brane-framework/tree/master/brane-framework" title="BraneFramework GitHub" target="_blank">View on GitHub</a></p>
+	                		</div>
+	                	</div>
+		            </section>
+		        </div>
+	        </div>
+        </article>
+        <article id="experiments">
+        	<span id="experiments-anchor" class="anchor-mark"></span>
+        	<div class="content">
+        		<div class="contained">
+		            <header>
+		                <h1 class="section_title">Experiments</h1>
+		            </header>
+		            <section>
+		                <span class="description">Brane Menu</span>
+		                <div class="clearfix mb-20">
+	                		<a href="http://branemenu.branedesign.com" target="_blank">
+			                	<div class="fake-osx-window-ui">
+								    <div class="fake-osx-window-frame">
+								        <span class="fake-osx-window-button"></span>
+								        <span class="fake-osx-window-button"></span>
+								        <span class="fake-osx-window-button"></span>
+								    </div>
+								    <div class="fake-osx-window-url">
+								    	<i class="ion-ios-search-strong"></i>
+								    	<span class="fake-osx-window-url-text">http://branemenu.branedesign.com</span>
+								    	<i class="ion-ios-refresh-empty"></i>
+								    </div>
+								    <div class="fake-osx-window-content">
+								    <img class="img-responsive" src="img/brane_menu.jpg">
+								    </div>
+								</div>
+							</a>
+	                	</div>
+	                	<div class="clearfix">
+	                		<p>Visual Menu Builder developed on JavaScript. <br>
+	                		Brane Menu allows users to create their own navigation menus.  <br>
+	                		It counts with a powerfull Options Panel that manages main menu structure and settings.  <br>
+	                		Menu elements are added by drag and drop components to the menu in an intuitive way. <br>
+	                		There are different components, from simply menu items to forms, videos, pop ups and more. Each one can be customized on menu options panel.
+	                		 </p>
+                		 	<a href="http://branemenu.branedesign.com/" target="_blank">Visit Brane Menu Website</a>
+	                	</div>
+		            </section>
+	        	</div>
+	        </div>
+        </article>
+        <article id="career">
+        	<span id="career-anchor" class="anchor-mark"></span>
+        	<div class="content">
+        		<div class="contained">
+		            <header>
+		                <h1 class="section_title">Career</h1>
+		            </header>
+		            <section class="timeline clearfix">
+		            	<div class="timeline-line"></div>
+		            	<!--
+								<i class="brane-icon">&emsp;</i>
+								<i class="open-source-icon">&emsp;</i>
+						-->
+						<div class="timeline-block">
+							<div class="timeline-icon" title="Open source">
+								<i class="ion-university"></i>
+							</div>
+							<div class="timeline-date">Feb 17 - Present</div>
+							<div class="timeline-content card">
+								<h2>Full stack developer at Wavebreak Media.</h2>
+								<p>- DesignWizard: An online Design Software that allows  you to create graphic content.</p>
+                <p>- Back end tools for image management with Node.</p>
+								<p>- AWS management.</p>
+								<p class="timeline-content-links">
+									<a href="https://app.designwizard.com/" target="_blank">APP.</a><br>
+									<a href="https://www.designwizard.com/" target="_blank">Website.</a>
+								</p>
+								<div>
+									<h3>Skills:</h3>
+									<div class="aptitudes">
+										<span>JS</span>
+										<span>Node</span>
+										<span>Loopback</span>
+										<span>Angular</span>
+										<span>AWS</span>
+										<span>HTML</span>
+										<span>Css</span>
+										<span>SASS</span>
+										<span>Bash</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="timeline-block">
+							<div class="timeline-icon" title="Open source">
+								<i class="ion-university"></i>
+							</div>
+							<div class="timeline-date">Aug 16 - Oct 16</div>
+							<div class="timeline-content card">
+								<h2>Udemy Certificate</h2>
+								<p>An advanced JavaScript course wich cover such concepts as objects and object literals, function expressions, prototypical inheritance, functional programming, scope chains, function constructors (plus new ES6 features), immediately invoked function expressions (IIFEs), call, apply, bind, and more.
+								</p>
+								<p class="timeline-content-links">
+									<a href="https://www.udemy.com/understand-javascript/" target="_blank">Course's link.</a><br>
+									<a href="https://www.udemy.com/certificate/UC-9CI8PIRW/" target="_blank">Certificate.</a>
+								</p>
+								<div>
+									<h3>Skills:</h3>
+									<div class="aptitudes">
+										<span>JS</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="timeline-block">
+							<div class="timeline-icon" title="Open source">
+								<i class="open-source-icon">&emsp;</i>
+							</div>
+							<div class="timeline-date">Aug 16 - Sep 16</div>
+							<div class="timeline-content card">
+								<h2>Scroll Watch</h2>
+								<p>A scroll watch JavaScript library.<br>
+								I made this library as a light weight, high performance alternative to the existing scroll watchers.<br>
+								It's the library I've used in this site and It manages the heading card, the sticky menu, the mark of the actual section at the menu, the skills animation effect and this timeline.
+								</p>
+								<p class="timeline-content-links">
+									<!--<a href="#" target="_blank">Project's web.</a><br> -->
+									<a href="https://github.com/alberto-hortelano/scrollwatch" target="_blank">Project at github.</a>
+								</p>
+								<div>
+									<h3>Skills:</h3>
+									<div class="aptitudes">
+										<span>JS</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="timeline-block">
+							<div class="timeline-icon" title="Award">
+								<i class="ion-trophy"></i>
+							</div>
+							<div class="timeline-date">Jul 16</div>
+							<div class="timeline-content card">
+								<h2>Codility golden award</h2>
+								<p>Codility is a talent recruiting company with an automated test of programming skills considering both correctness and performance. They launch programming challenges every couple of months and I got a Codility golden award in the Scandium 2016 Challenge.
+								</p>
+								<p class="timeline-content-links">
+									<a href="https://codility.com/cert/view/certKWXATU-UESKSKMFSHD77BFV/" target="_blank">The award.</a>
+								</p>
+								<div>
+									<h3>Skills:</h3>
+									<div class="aptitudes">
+										<span>JS</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="timeline-block">
+							<div class="timeline-icon" title="Open source">
+								<i class="open-source-icon">&emsp;</i>
+							</div>
+							<div class="timeline-date">Feb 16 - Jul 16</div>
+							<div class="timeline-content card">
+								<h2>Front Ninja</h2>
+								<p>Front Ninja is a front end development environment for webs and apps.<br>
+								I made this program as a way of exploring the possibilities of interaction between desktop and mobile Node based technologies as Node Webkit and Phonegap.
+								</p>
+								<p class="timeline-content-links">
+									<a href="http://www.frontninja.com/" target="_blank">Project's web.</a><br>
+									<a href="https://github.com/alberto-hortelano/front_ninja" target="_blank">Project at github.</a>
+								</p>
+								<div>
+									<h3>Skills:</h3>
+									<div class="aptitudes">
+										<span>JS</span>
+										<span>Node</span>
+										<span>Phonegap</span>
+										<span>NodeWebkit</span>
+										<span>AJAX</span>
+										<span>HTML</span>
+										<span>Css</span>
+										<span>SASS</span>
+										<span>Bash</span>
+										<span>VBS</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="timeline-block">
+							<div class="timeline-icon" title="Freelance">
+								<i class="ion-person"></i>
+							</div>
+							<div class="timeline-date">Jan 16 - Mar 16</div>
+							<div class="timeline-content card">
+								<h2>WiZink's control panel</h2>
+								<p>The client's admin panel of <a href="https://www.wizink.es/home" target="_blank">WiZink</a> bank as freelance at <a href="http://babel.es/en/home" target="_blank">Babel.</a><br>
+								My team was in charge of a section of the admin panel which inherited from the general design panel and we had to keep in touch with the commercial team from the bank as they made changes to the general design which involved TV spots and merchandising.</p>
+								<div>
+									<h3>Skills:</h3>
+									<div class="aptitudes">
+										<span>JS</span>
+										<span>HTML</span>
+										<span>Css</span>
+										<span>SASS</span>
+										<span>Accessibility</span>
+										<span>Semantic</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="timeline-block">
+							<div class="timeline-icon" title="Freelance">
+								<i class="ion-person"></i>
+							</div>
+							<div class="timeline-date">Jul 15 - Sep 15</div>
+							<div class="timeline-content card">
+								<h2>Baremo</h2>
+								<p>A Chrome app for the Insurance Industry as freelance at <a href="http://www.devanddel.com/" target="_blank">dev&del</a>. I made the front-end in collaboration with the back-end developers. <br>I worked remotely using <a href="https://www.atlassian.com/software/confluence" target="_blank">Confluence.</a></p>
+								<p class="timeline-content-links">
+									<a href="https://chrome.google.com/webstore/detail/baremo/cdbnkglbjonjpbjomllicdhbaglbjeng" target="_blank">The Chrome app at Google webstore.</a>
+								</p>
+								<div>
+									<h3>Skills:</h3>
+									<div class="aptitudes">
+										<span>JS</span>
+										<span>HTML</span>
+										<span>Css</span>
+										<span>SASS</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="timeline-block">
+							<div class="timeline-icon" title="Freelance">
+								<i class="ion-person"></i>
+							</div>
+							<div class="timeline-date">Jul 15 - Nov 15</div>
+							<div class="timeline-content card">
+								<h2>GRI</h2>
+								<p>GRI Renewable Industries corporate page as freelance at <a href="http://babel.es/en/home" target="_blank">Babel.</a><br>At this project I made a child theme for a WordPress installation.</p>
+								<p class="timeline-content-links">
+									<a href="http://www.gri.com.es/en/" target="_blank">The website.</a>
+								</p>
+								<div>
+									<h3>Skills:</h3>
+									<div class="aptitudes">
+										<span>PHP</span>
+										<span>WordPress</span>
+										<span>JS</span>
+										<span>jQuery</span>
+										<span>HTML</span>
+										<span>Css</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="timeline-block">
+							<div class="timeline-icon" title="Brane">
+								<i class="open-source-icon">&emsp;</i>
+							</div>
+							<div class="timeline-date">Apr 14 - Jan 16</div>
+							<div class="timeline-content card">
+								<h2>Brane framework</h2>
+								<p>Brane Framework is an Open Source Framework designed to develop WordPress Themes easily and quickly.<br>It has been built to be used on any kind of theme, covering the majority of scenarios, always maintaining a standard of quality.<br>Can be extended to add new functionalities, compatibility with plugins, widgets...
+								</p>
+								<p class="timeline-content-links">
+									<a href="https://github.com/alberto-hortelano/Brane-framework" target="_blank">The code at Github.</a>
+								</p>
+								<div>
+									<h3>Skills:</h3>
+									<div class="aptitudes">
+										<span>PHP</span>
+										<span>WordPress</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="timeline-block">
+							<div class="timeline-icon" title="Freelance">
+								<i class="ion-person"></i>
+							</div>
+							<div class="timeline-date">Oct 13 - Feb 15</div>
+							<div class="timeline-content card">
+								<h2>Vithas</h2>
+								<p>Health insurance corporate and appointments site as freelance at <a href="http://babel.es/en/home" target="_blank">Babel.</a><br>On this project I made the front end in collaboration with other developers.<br>
+								</p>
+								<p class="timeline-content-links">
+									<a href="http://www.vithas.es/" target="_blank">The website.</a>
+								</p>
+								<div>
+									<h3>Skills:</h3>
+									<div class="aptitudes">
+										<span>JS</span>
+										<span>HTML</span>
+										<span>Css</span>
+										<span>SASS</span>
+										<span>Accessibility</span>
+										<span>Semantic</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="timeline-block">
+							<div class="timeline-icon" title="Freelance">
+								<i class="ion-person"></i>
+							</div>
+							<div class="timeline-date">Sep 11 - Sep 13</div>
+							<div class="timeline-content card">
+								<h2>Low cost webs as freelance</h2>
+								<p>The beginning is never easy.<br>I started my freelance career making low cost webs for small businesses, mainly WordPress installations. <br>Two examples:</p>
+								<p class="timeline-content-links">
+									<a href="http://parquetstarimasmadrid.es/" target="_blank">Esparta</a><br>
+									<a href="http://vgrunning.com/" target="_blank">VG Running</a>
+								</p>
+								<div>
+									<h3>Skills:</h3>
+									<div class="aptitudes">
+										<span>PHP</span>
+										<span>WordPress</span>
+										<span>JS</span>
+										<span>HTML</span>
+										<span>Css</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="timeline-block">
+							<div class="timeline-icon" title="Education">
+								<i class="ion-university"></i>
+							</div>
+							<div class="timeline-date">Sep 09 - Jun 11</div>
+							<div class="timeline-content card">
+								<h2>Software Application Development Associate's Degree</h2>
+								<p>A 2000 hours course at <a href="http://ies.claradelrey.madrid.educa.madrid.org/portal/index.php?lang=en" target="_blank">IES Clara del Rey.</a><br>This course was divided in:<br>
+								- Information Systems<br>
+								- Applications analysis and design<br>
+								- Programming in C and Java<br>
+								- Databases in SQL<br>
+								- Front end design with HTML and JavaScript<br>
+								- Relationships in the working environment
+								</p>
+							</div>
+						</div>
+						<div class="timeline-block">
+							<div class="timeline-icon" title="Army">
+								<i class="icon-radar-2"></i>
+							</div>
+							<div class="timeline-date">Oct 00 - Jun 09</div>
+							<div class="timeline-content card">
+								<h2>Communication Systems Operator</h2>
+								<p>I served as a soldier at the Transmissions HQ. <br>My duty was to transmit and archive non confidential and low grade confidential messages through the intranet. During the military maneuvers I attended a mobile station.</p>
+							</div>
+						</div>
+					</section>
+	        	</div>
+	        </div>
+        </article>
+        <article id="contact">
+        	<span id="contact-anchor" class="anchor-mark"></span>
+        	<div class="content">
+        		<div class="contained">
+		            <header>
+		                <h1 class="section_title">Contact</h1>
+		            </header>
+		            <form>
+		            	<div class="contact-inputs">
+			            	<label><input id="contact-name" class="contact-field" type="text"><span>Name</span></label>
+			            	<label><input id="contact-email" class="contact-field" type="email"><span>Email</span></label>
+			            	<label><input id="contact-subject" class="contact-field" type="text"><span>Subject</span></label>
+		            	</div>
+		            	<div class="contact-textarea">
+		            		<label><textarea id="contact-message" class="contact-field" rows="5"></textarea><span>Message</span></label>
+		            	</div>
+						<div id="send_mail">Send</div>
+					</form>
+	        	</div>
+	        </div>
+        </article>
+    </section>
+</body>
+</html>
