@@ -164,11 +164,9 @@
 				})
 
 			$(window).load(function () {
-				setTimeout(function () {
-					if ($(window).scrollTop() <= 120) {
-						$("#card").addClass('raised')
-					}
-				}, 1000);
+				if ($(window).scrollTop() <= 120) {
+					$("#card").addClass('raised')
+				}
 			})
 		});
 	</script>
